@@ -1,4 +1,4 @@
-FROM node:20-alpine As development
+FROM node:alpine As development
 
 RUN npm install -g npm@10.2.5
 
@@ -12,7 +12,7 @@ COPY . .
 
 RUN npm run build
 
-FROM node:20-alpine as production
+FROM node:alpine as production
 
 RUN npm install -g npm@10.2.5
 
@@ -29,4 +29,4 @@ COPY . .
 
 COPY --from=development /usr/src/app/dist ./dist
 
-CMD ["node", "dist/apps/orders/main"]
+CMD ["node", "dist/main"]

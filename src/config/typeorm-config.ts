@@ -8,11 +8,11 @@ import { Voucher } from 'src/voucher/entities/voucher.entity';
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
   type: 'postgres',
-  host: 'localhost',
+  host: 'estrenazcel.cbm3hiad8gzj.us-east-2.rds.amazonaws.com',
   port: 5432,
   username: 'postgres',
-  password: 'luquillas',
-  database: 'estrenazcel',
+  password: 'Luquillas$1',
+  database: 'postgres',
   entities: [Admin,Company,Credit,Sucursal, User, Voucher],
   synchronize: true,
 };
