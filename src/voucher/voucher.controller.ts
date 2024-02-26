@@ -1,33 +1,39 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
-  Param,
-  Patch,
   Post,
-  UploadedFile,
+  Body,
+  Patch,
+  Param,
+  Delete,
   UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
-import { CreditsService } from './credits.service';
-import { CreateCreditDto } from './dto/create-credit.dto';
-import { UsersService } from 'src/users/users.service';
+import { VoucherService } from './voucher.service';
+import { CreateVoucherDto } from './dto/create-voucher.dto';
+import { UpdateVoucherDto } from './dto/update-voucher.dto';
+import { CreditsService } from 'src/credits/credits.service';
+import { CompanyService } from 'src/company/company.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as csv from 'csv-parser';
 import * as fs from 'fs';
 
-@Controller('credits')
-export class CreditsController {
+@Controller('voucher')
+export class VoucherController {
   constructor(
+    private readonly voucherService: VoucherService,
     private readonly creditService: CreditsService,
-    private readonly userService: UsersService,
-    ) {}
+    private readonly companyService: CompanyService,
+  ) {}
 
   @Post()
-  async create(@Body() createCompanyDto: CreateCreditDto) {
-    const user = await this.userService.findByCurp(createCompanyDto.clientCurp);
-    return this.creditService.create(createCompanyDto, user);
+  async create(@Body() createVoucherDto: CreateVoucherDto) {
+    const credit = await this.creditService.findOne(createVoucherDto.creditId);
+    const company = await this.companyService.findOne(
+      createVoucherDto.companyId,
+    );
+    return this.voucherService.create(createVoucherDto, credit, company);
   }
 
   @Post('file')
@@ -54,17 +60,13 @@ export class CreditsController {
         // Do something with the processed data
         for (const row of results) {
           // Do something with the row
-          const v = new CreateCreditDto();
-          v.credit_amount = row.credit_amount;
-          v.hitch_amount = row.hitch_amount;
-          v.branch_phone = row.branch_phone;
-          v.model_phone = row.model_phone;
-          v.pending_payments = row.pending_payments;
-          v.current_balance = row.current_balance;
-          v.imei = row.imei;
-          v.weekly_payment = row.weekly_payment;
-          v.weekly_day_payment = row.weekly_day_payment;
-          v.clientCurp = row.clientCurp;
+          const v = new CreateVoucherDto();
+          v.payment_date = row.credit_amount;
+          v.code = row.hitch_amount;
+          v.amount = row.branch_phone;
+          v.amountRetarded = row.model_phone;
+          v.creditId = row.pending_payments;
+          v.companyId = row.current_balance;
           this.create(v);
           console.log(row);
         }
@@ -80,21 +82,21 @@ export class CreditsController {
 
   @Get()
   findAll() {
-    return this.creditService.findAll();
+    return this.voucherService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.creditService.findOne(+id);
+    return this.voucherService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCompanyDto: CreateCreditDto) {
-    return this.creditService.update(+id, updateCompanyDto);
+  update(@Param('id') id: string, @Body() updateVoucherDto: CreateVoucherDto) {
+    return this.voucherService.update(+id, updateVoucherDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.creditService.remove(+id);
+    return this.voucherService.remove(+id);
   }
 }
