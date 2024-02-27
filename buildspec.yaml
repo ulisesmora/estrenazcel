@@ -12,3 +12,4 @@ phases:
   post_build:
     commands:
       - echo final
+      - aws ecs update-service --cluster clients --service estrenazcel --force-new-deployment
