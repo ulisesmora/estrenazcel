@@ -36,7 +36,10 @@ export class VoucherService {
   }
 
   async findOne(id: number) {
-    const voucher = await this.voucherRepository.findOne({ where: { id } });
+    const voucher = await this.voucherRepository.findOne({
+      where: { id },
+      relations: { company: true, credit: true },
+    });
     if (!voucher) {
       throw new NotFoundException('id not found');
     }
