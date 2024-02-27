@@ -3,11 +3,11 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/u5t1d9m6
+      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/q5q0p8i1
   build: 
     commands:
-      - docker build -t micros -f ./Dockerfile .
-      - docker tag micros:latest public.ecr.aws/u5t1d9m6/micros:latest
+      - docker build -t estrenazcel -f ./Dockerfile .
+      - docker tag estrenazcel:latest public.ecr.aws/u5t1d9m6/estrenazcel:latest
   post_build:
     commands:
-      - docker push public.ecr.aws/u5t1d9m6/micros:latest
+      - echo final
