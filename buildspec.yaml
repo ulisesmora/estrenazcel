@@ -8,6 +8,7 @@ phases:
     commands:
       - docker build -t estrenazcel -f ./Dockerfile .
       - docker tag estrenazcel:latest public.ecr.aws/u5t1d9m6/estrenazcel:latest
+      - docker push public.ecr.aws/q5q0p8i1/estrenazcel:latest
   post_build:
     commands:
       - echo final
