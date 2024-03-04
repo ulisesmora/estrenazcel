@@ -37,6 +37,14 @@ export class CreditsService {
     return credit;
   }
 
+  async findOneByImei(id: string) {
+    const credit = await this.creditRepository.findOne({ where: { imei: id } });
+    if (!credit) {
+      throw new NotFoundException('id not found ');
+    }
+    return credit;
+  }
+
   async update(id: number, updateCompanyDto: CreateCreditDto) {
     return `This action updates a #${id} company`;
   }

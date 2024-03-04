@@ -21,6 +21,8 @@ import {
     payment_date: string;
     @Column()
     code: string;
+    @Column({ nullable: true })
+    codeLated: string;
     @Column({ type: 'float', nullable: true })
     amount: number;
     @Column({ type: 'float', nullable: true })

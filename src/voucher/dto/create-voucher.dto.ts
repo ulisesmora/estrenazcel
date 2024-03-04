@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateVoucherDto {
   @IsNotEmpty()
@@ -7,6 +7,9 @@ export class CreateVoucherDto {
   @IsNotEmpty()
   @IsString()
   code: string;
+  @IsOptional()
+  @IsString()
+  codeLated: string;
   @IsNotEmpty()
   @IsNumber()
   amount: number;
@@ -14,8 +17,8 @@ export class CreateVoucherDto {
   @IsNumber()
   amountRetarded: number;
   @IsNotEmpty()
-  @IsNumber()
-  creditId: number;  
+  @IsString()
+  creditId: string;  
   @IsNotEmpty()
   @IsNumber()
   companyId: number;
