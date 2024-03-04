@@ -61,12 +61,12 @@ export class VoucherController {
         for (const row of results) {
           // Do something with the row
           const v = new CreateVoucherDto();
-          v.payment_date = row.credit_amount;
-          v.code = row.hitch_amount;
-          v.amount = row.branch_phone;
-          v.amountRetarded = row.model_phone;
-          v.creditId = row.pending_payments;
-          v.companyId = row.current_balance;
+          v.payment_date = row.payment_date;
+          v.code = row.code;
+          v.amount = row.amount;
+          v.amountRetarded = row.amountRetarded;
+          v.creditId = row.creditId;
+          v.companyId = row.companyId;
           this.create(v);
           console.log(row);
         }
