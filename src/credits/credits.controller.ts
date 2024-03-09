@@ -88,6 +88,11 @@ export class CreditsController {
     return this.creditService.findOne(+id);
   }
 
+  @Get('imei/:id')
+  findOneByImei(@Param('id') id: string) {
+    return this.creditService.findOneByImei(id);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCompanyDto: CreateCreditDto) {
     return this.creditService.update(+id, updateCompanyDto);

@@ -38,7 +38,10 @@ export class CreditsService {
   }
 
   async findOneByImei(id: string) {
-    const credit = await this.creditRepository.findOne({ where: { imei: id } });
+    const credit = await this.creditRepository.findOne({
+      where: { imei: id },
+      relations: { user: true },
+    });
     if (!credit) {
       throw new NotFoundException('id not found ');
     }
