@@ -8,17 +8,15 @@ export class CreateVoucherDto {
   @IsString()
   code: string;
   @IsOptional()
-  @IsString()
   codeLated: string;
   @IsNotEmpty()
   @IsNumber()
   amount: number;
-  @IsNotEmpty()
-  @IsNumber()
+  @IsOptional()
   amountRetarded: number;
   @IsNotEmpty()
   @IsString()
-  creditId: string;  
+  creditId: string; 
   @IsNotEmpty()
   @IsNumber()
   companyId: number;

@@ -73,7 +73,7 @@ export class CreditsController {
       })
       .on('error', (error) => {
         // Handle error
-        console.error(error);
+        console.error(error,'ERROR CREDITS');
       });
     // Return response
   }

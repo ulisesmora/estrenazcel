@@ -29,7 +29,9 @@ export class VoucherController {
 
   @Post()
   async create(@Body() createVoucherDto: CreateVoucherDto) {
-    const credit = await this.creditService.findOneByImei(createVoucherDto.creditId);
+    const credit = await this.creditService.findOneByImei(
+      createVoucherDto.creditId,
+    );
     const company = await this.companyService.findOne(
       createVoucherDto.companyId,
     );
@@ -64,10 +66,10 @@ export class VoucherController {
           v.payment_date = row.payment_date;
           v.code = row.code;
           v.codeLated = row.codeLated;
-          v.amount = row.amount;
-          v.amountRetarded = row.amountRetarded;
+          v.amount = Number.parseFloat(row.amount);
+          v.amountRetarded = Number.parseFloat(row.amountRetarded);
           v.creditId = row.creditId;
-          v.companyId = row.companyId;
+          v.companyId = Number.parseInt(row.companyId);
           this.create(v);
           console.log(row);
         }
