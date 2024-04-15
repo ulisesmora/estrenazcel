@@ -8,6 +8,7 @@ import { SucursalModule } from './sucursal/sucursal.module';
 import { VoucherModule } from './voucher/voucher.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './config/typeorm-config';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -20,5 +21,6 @@ import { typeOrmConfig } from './config/typeorm-config';
     SucursalModule,
     VoucherModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
