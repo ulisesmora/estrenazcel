@@ -60,7 +60,7 @@ export class UsersController {
           user.clientPhoneNumber = row.clientPhoneNumber;
           user.clientCurp = row.clientCurp;
           this.create(user);
-          console.log(row);
+          console.log(row.clientCurp);
         }
         // Remove the uploaded file after processing
         fs.unlinkSync(file.path);

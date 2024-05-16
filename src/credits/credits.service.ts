@@ -14,10 +14,14 @@ export class CreditsService {
   ) {}
 
   async create(createCompanyDto: CreateCreditDto, user: User) {
+    try {
     const data = classToPlain(createCompanyDto);
     const credit = plainToClass(Credit, data);
     credit.user = user;
     return await credit.save();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async findAll() {
@@ -32,7 +36,7 @@ export class CreditsService {
   async findOne(id: number) {
     const credit = await this.creditRepository.findOne({ where: { id } });
     if (!credit) {
-      throw new NotFoundException('id not found ');
+      throw new NotFoundException(`id ${id} not found`);
     }
     return credit;
   }
@@ -43,7 +47,8 @@ export class CreditsService {
       relations: { user: true },
     });
     if (!credit) {
-      throw new NotFoundException('id not found ');
+      console.log(`id ${id} not found`);
+      //throw new NotFoundException(`id ${id} not found`);
     }
     return credit;
   }

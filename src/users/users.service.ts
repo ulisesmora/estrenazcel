@@ -41,7 +41,8 @@ export class UsersService {
       where: { clientCurp: curp },
     });
     if (!user) {
-      throw new NotFoundException('id not find');
+      console.log('id not find: ' + curp)
+      //throw new NotFoundException('id not find: ' + curp);
     }
     return user;
   }
@@ -56,7 +57,7 @@ export class UsersService {
       relations: ['credit', 'credit.voucher', 'credit.voucher.company'],
     });
     if (!user) {
-      throw new NotFoundException('id not find');
+      throw new NotFoundException('id not find' + phone + email + curp);
     }
     return user;
   }

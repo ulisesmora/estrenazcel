@@ -66,7 +66,6 @@ export class CreditsController {
           v.weekly_day_payment = row.weekly_day_payment;
           v.clientCurp = row.clientCurp;
           this.create(v);
-          console.log(row);
         }
         // Remove the uploaded file after processing
         fs.unlinkSync(file.path);

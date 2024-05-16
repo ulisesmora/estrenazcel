@@ -58,7 +58,7 @@ export class VoucherController {
         // Process each row here
         results.push(data);
       })
-      .on('end', () => {
+      .on('end',  () => {
         // Do something with the processed data
         for (const row of results) {
           // Do something with the row
@@ -71,7 +71,7 @@ export class VoucherController {
           v.creditId = row.creditId;
           v.companyId = Number.parseInt(row.companyId);
           this.create(v);
-          console.log(row);
+          console.log(row.amount)
         }
         // Remove the uploaded file after processing
         fs.unlinkSync(file.path);

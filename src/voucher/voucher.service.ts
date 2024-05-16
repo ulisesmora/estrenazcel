@@ -19,11 +19,15 @@ export class VoucherService {
     credit: Credit,
     company: Company,
   ) {
+    try {
     const data = classToPlain(createVoucherDto);
     const voucher = plainToClass(Voucher, data);
     voucher.credit = credit;
     voucher.company = company;
     return await voucher.save();
+    } catch (error) {
+      console.log(error);  
+    }
   }
 
   async findAll() {
@@ -41,7 +45,7 @@ export class VoucherService {
       relations: { company: true, credit: true },
     });
     if (!voucher) {
-      throw new NotFoundException('id not found');
+      throw new NotFoundException(`id ${id} not found`);
     }
     return voucher;
   }
