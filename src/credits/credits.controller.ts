@@ -55,12 +55,12 @@ export class CreditsController {
         for (const row of results) {
           // Do something with the row
           const v = new CreateCreditDto();
-          v.credit_amount = row.credit_amount;
+          v.credit_amount = Number.parseFloat(row.credit_amount);
           v.hitch_amount = row.hitch_amount;
           v.branch_phone = row.branch_phone;
           v.model_phone = row.model_phone;
-          v.pending_payments = row.pending_payments;
-          v.current_balance = row.current_balance;
+          v.pending_payments = Number.parseInt(row.pending_payments);
+          v.current_balance = Number.parseFloat(row.current_balance);
           v.imei = row.imei;
           v.weekly_payment = row.weekly_payment;
           v.weekly_day_payment = row.weekly_day_payment;
