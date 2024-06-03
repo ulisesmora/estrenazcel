@@ -67,11 +67,13 @@ export class VoucherController {
           v.code = row.code;
           v.codeLated = row.codeLated;
           v.amount = Number.parseFloat(row.amount);
-          v.amountRetarded = Number.parseFloat(row.amountRetarded);
+          v.amountRetarded = (row.amountRetarded) ? Number.parseFloat(row.amountRetarded) : null ;
           v.creditId = row.creditId;
           v.companyId = Number.parseInt(row.companyId);
+          if( v.amount && v.creditId ){
           this.create(v);
-          console.log(row.amount)
+          }
+          console.log(row.amount, row.creditId )
         }
         // Remove the uploaded file after processing
         fs.unlinkSync(file.path);
