@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateVoucherDto } from './dto/create-voucher.dto';
+import { CreateVoucherDto, PaginationParamsDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Voucher } from './entities/voucher.entity';
@@ -30,13 +30,30 @@ export class VoucherService {
     }
   }
 
-  async findAll() {
-    return await this.voucherRepository.find({
+  async findAll(paginationParams: PaginationParamsDto) {
+    const { page = 1, limit = 10, sortBy = 'id', sortOrder = 'ASC' } = paginationParams;
+  
+    const [vouchers, total] = await this.voucherRepository.findAndCount({
       relations: {
         credit: true,
         company: true,
       },
+      skip: (page - 1) * limit,
+      take: limit,
+      order: {
+        [sortBy]: sortOrder,
+      },
     });
+  
+    return {
+      data: vouchers,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async findOne(id: number) {

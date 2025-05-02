@@ -12,7 +12,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/createUser.dto';
+import { CreateUserDto, PaginationDto } from './dto/createUser.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as csv from 'csv-parser';
 import { diskStorage } from 'multer';
@@ -82,8 +82,8 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  async findAll(@Query() paginationDto: PaginationDto) {
+    return this.userService.findAll(paginationDto);
   }
 
   @Get(':id')

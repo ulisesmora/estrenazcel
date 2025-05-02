@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsEmail, IsPhoneNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsEmail, IsPhoneNumber, IsOptional, IsNumber, Min  } from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -18,4 +18,29 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   clientCurp: string;
+}
+
+
+
+export class PaginationDto {
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  page?: number = 1;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  limit?: number = 10;
+}
+
+// src/common/dto/paginated-result.dto.ts
+export interface PaginatedResultDto<T> {
+  data: T[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    last_page: number;
+  };
 }

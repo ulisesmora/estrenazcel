@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Matches, Min } from 'class-validator';
 
 export class CreateCreditDto {
   @IsNotEmpty()
@@ -31,4 +31,42 @@ export class CreateCreditDto {
   @IsNotEmpty()
   @IsString()
   clientCurp: string;
+}
+
+
+// src/common/dto/pagination.dto.ts
+
+export class PaginationDto {
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  page?: number = 1;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  limit?: number = 10;
+
+  @IsOptional()
+  @IsString()
+  sortBy?: string = 'id';
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^(ASC|DESC)$/i)
+  sortOrder?: 'ASC' | 'DESC' = 'DESC';
+
+  @IsOptional()
+  @IsString()
+  search?: string;
+}
+
+export interface PaginatedResultDto<T> {
+  data: T[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    last_page: number;
+  };
 }

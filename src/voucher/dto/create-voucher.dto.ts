@@ -21,3 +21,11 @@ export class CreateVoucherDto {
   @IsNumber()
   companyId: number;
 }
+
+export class PaginationParamsDto {
+  page?: number = 1;
+  limit?: number = 10;
+  sortBy?: string = 'id';
+  sortOrder?: 'ASC' | 'DESC' = 'ASC';
+  // Puedes añadir más filtros si necesitas
+}

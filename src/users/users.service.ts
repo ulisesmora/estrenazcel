@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/createUser.dto';
+import { CreateUserDto, PaginatedResultDto, PaginationDto } from './dto/createUser.dto';
 import { classToPlain, plainToClass } from '@nestjs/class-transformer';
 
 @Injectable()
@@ -24,10 +24,28 @@ export class UsersService {
     }
   }
 
-  async findAll() {
-    return await this.userRepository.find();
+
+  async findAll(paginationDto: PaginationDto): Promise<PaginatedResultDto<User>> {
+    const { page, limit } = paginationDto;
+    const skip = (page - 1) * limit;
+
+    const [users, total] = await this.userRepository.findAndCount({
+      skip,
+      take: limit,
+    });
+
+    return {
+      data: users,
+      meta: {
+        total,
+        page,
+        limit,
+        last_page: Math.ceil(total / limit),
+      },
+    };
   }
 
+  
   async findOne(id: number) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {

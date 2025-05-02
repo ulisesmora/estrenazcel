@@ -6,11 +6,12 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { CreditsService } from './credits.service';
-import { CreateCreditDto } from './dto/create-credit.dto';
+import { CreateCreditDto, PaginationDto } from './dto/create-credit.dto';
 import { UsersService } from 'src/users/users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -78,8 +79,8 @@ export class CreditsController {
   }
 
   @Get()
-  findAll() {
-    return this.creditService.findAll();
+  async findAll(@Query() paginationDto: PaginationDto) {
+    return this.creditService.findAll(paginationDto);
   }
 
   @Get(':id')

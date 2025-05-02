@@ -8,9 +8,10 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { VoucherService } from './voucher.service';
-import { CreateVoucherDto } from './dto/create-voucher.dto';
+import { CreateVoucherDto, PaginationParamsDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
 import { CreditsService } from 'src/credits/credits.service';
 import { CompanyService } from 'src/company/company.service';
@@ -86,8 +87,8 @@ export class VoucherController {
   }
 
   @Get()
-  findAll() {
-    return this.voucherService.findAll();
+  async findAll(@Query() paginationParams: PaginationParamsDto) {
+    return this.voucherService.findAll(paginationParams);
   }
 
   @Get(':id')
