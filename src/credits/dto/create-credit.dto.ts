@@ -66,3 +66,22 @@ export interface PaginatedResultDto<T> {
     last_page: number;
   };
 }
+
+export class SearchCreditDto {
+  id?: number;
+  credit_amount?: number;
+  hitch_amount?: number;
+  branch_phone?: string;
+  model_phone?: string;
+  pending_payments?: number;
+  current_balance?: number;
+  imei?: string;
+  weekly_payment?: number;
+  weekly_day_payment?: string;
+  'user.firstName'?: string;
+  'user.lastName'?: string;
+  'user.secondName'?: string;
+  'user.clientEmail'?: string;
+  'user.clientPhoneNumber'?: string;
+  'user.clientCurp'?: string;
+}

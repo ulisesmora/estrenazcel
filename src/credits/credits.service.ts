@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Credit } from './credit.entity';
-import { Like, Repository } from 'typeorm';
-import { CreateCreditDto, PaginatedResultDto, PaginationDto } from './dto/create-credit.dto';
+import { Brackets, Like, Repository } from 'typeorm';
+import { CreateCreditDto, PaginatedResultDto, PaginationDto, SearchCreditDto } from './dto/create-credit.dto';
 import { classToPlain, plainToClass } from '@nestjs/class-transformer';
 import { User } from 'src/users/user.entity';
 
@@ -84,5 +84,44 @@ export class CreditsService {
   async remove(id: number) {
     const credit = await this.findOne(id);
     return await credit.softRemove();
+  }
+
+  async searchCredits(searchParams: SearchCreditDto): Promise<Credit[]> {
+    const queryBuilder = this.creditRepository
+      .createQueryBuilder('credit')
+      .leftJoinAndSelect('credit.user', 'user')
+
+    // Construcción dinámica de condiciones
+    if (Object.keys(searchParams).length > 0) {
+      queryBuilder.where(
+        new Brackets((qb) => {
+          for (const [key, value] of Object.entries(searchParams)) {
+            if (value) {
+              // Campos de la entidad principal
+              if (key in this.creditRepository.metadata.propertiesMap) {
+                qb.orWhere(`credit.${key} ILIKE :${key}`, {
+                  [key]: `%${value}%`,
+                });
+              }
+              // Campos de la relación user
+              else if (key.startsWith('user.')) {
+                const field = key.split('.')[1];
+                qb.orWhere(`user.${field} ILIKE :${key}`, {
+                  [key]: `%${value}%`,
+                });
+              }
+            }
+          }
+        }),
+      );
+    }
+
+    const results = await queryBuilder.getMany();
+
+    if (results.length === 0) {
+      throw new NotFoundException('No se encontraron resultados');
+    }
+
+    return results;
   }
 }

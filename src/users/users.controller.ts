@@ -1,8 +1,11 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   InternalServerErrorException,
   Param,
   Patch,
@@ -70,6 +73,129 @@ export class UsersController {
         console.error(error);
       });
     // Return response
+  }
+
+
+  @Post('upload-csv')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (_, file, cb) => cb(null, file.originalname),
+      }),
+      fileFilter: (_, file, cb) => {
+        const isCsv = file.originalname.toLowerCase().endsWith('.csv');
+        if (!isCsv) {
+          return cb(new BadRequestException('Solo se permiten archivos CSV'), false);
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  async uploadCsv(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('No se proporcionó archivo');
+    }
+
+    const results: CreateUserDto[] = [];
+    const errors: Array<{ row: number; error: string; data: any }> = [];
+    let processedRows = 0;
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        let headersValidated = false;
+        fs.createReadStream(file.path)
+          .pipe(csv())
+          .on('headers', (headers) => {
+            const expected = [
+              'firstName',
+              'lastName',
+              'secondName',
+              'clientEmail',
+              'clientPhoneNumber',
+              'clientCurp',
+            ];
+            const missing = expected.filter((h) => !headers.includes(h));
+            if (missing.length) {
+              return reject(
+                new Error(`Faltan columnas obligatorias: ${missing.join(', ')}`),
+              );
+            }
+            headersValidated = true;
+          })
+          .on('data', async (row) => {
+            processedRows++;
+            const rowNumber = processedRows + 1; // cuenta encabezado
+            try {
+              // Validaciones
+              if (!row.firstName || !row.lastName || !row.clientEmail) {
+                throw new Error('Campos requeridos faltantes');
+              }
+
+              const dto = this.mapRowToDto(row);
+              const created = await this.userService.create(dto);
+              results.push(created);
+            } catch (err) {
+              errors.push({
+                row: rowNumber,
+                error: err.message,
+                data: row,
+              });
+            }
+          })
+          .on('end', () => {
+            if (!headersValidated) {
+              return reject(new Error('No se pudieron validar los encabezados'));
+            }
+            resolve();
+          })
+          .on('error', (err) => reject(err));
+      });
+    } catch (err) {
+      console.error('Error procesando CSV:', err.message);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error procesando archivo CSV',
+          details: err.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    } finally {
+      // Eliminar archivo temporal
+      if (fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+      }
+    }
+
+    return {
+      success: results.length,
+      errors: errors.length,
+      details: {
+        processed: processedRows,
+        successful: results.length,
+        failed: errors.length,
+        errors: errors.slice(0, 10),
+      },
+      message: this.generateSummaryMessage(results.length, errors.length),
+    };
+  }
+
+  private mapRowToDto(row: any): CreateUserDto {
+    const dto = new CreateUserDto();
+    dto.firstName = row.firstName.trim();
+    dto.lastName = row.lastName.trim();
+    dto.secondName = row.secondName?.trim();
+    dto.clientEmail = row.clientEmail.trim();
+    dto.clientPhoneNumber = row.clientPhoneNumber.trim();
+    dto.clientCurp = row.clientCurp.trim();
+    return dto;
+  }
+
+  private generateSummaryMessage(success: number, errors: number): string {
+    if (errors === 0) return 'Todos los registros fueron procesados exitosamente';
+    if (success === 0) return 'No se pudo procesar ningún registro';
+    return `Procesados ${success} registros con ${errors} errores`;
   }
 
   @Get('complete/search')
