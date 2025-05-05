@@ -85,43 +85,60 @@ export class CreditsService {
     const credit = await this.findOne(id);
     return await credit.softRemove();
   }
-
-  async searchCredits(searchParams: SearchCreditDto): Promise<Credit[]> {
+  async searchCredits(searchParams: SearchCreditDto): Promise<PaginatedResultDto<Credit>> {
+    const { page = 1, limit = 10, ...filters } = searchParams;
+    const skip = (page - 1) * limit;
+  
     const queryBuilder = this.creditRepository
       .createQueryBuilder('credit')
       .leftJoinAndSelect('credit.user', 'user')
-
-    // Construcción dinámica de condiciones
-    if (Object.keys(searchParams).length > 0) {
+      .leftJoinAndSelect('credit.sucursal', 'sucursal');
+  
+    // Construcción dinámica de condiciones de búsqueda
+    if (Object.keys(filters).length > 0) {
       queryBuilder.where(
         new Brackets((qb) => {
-          for (const [key, value] of Object.entries(searchParams)) {
+          for (const [key, value] of Object.entries(filters)) {
             if (value) {
-              // Campos de la entidad principal
-              if (key in this.creditRepository.metadata.propertiesMap) {
-                qb.orWhere(`credit.${key} ILIKE :${key}`, {
-                  [key]: `%${value}%`,
+              // Búsqueda en campos de Credit
+              if (this.creditRepository.metadata.propertiesMap[key]) {
+                qb.orWhere(`credit.${key} ILIKE :${key}`, { 
+                  [key]: `%${value}%` 
                 });
               }
-              // Campos de la relación user
-              else if (key.startsWith('user.')) {
-                const field = key.split('.')[1];
-                qb.orWhere(`user.${field} ILIKE :${key}`, {
-                  [key]: `%${value}%`,
-                });
+              // Búsqueda en relaciones (user o sucursal)
+              else if (key.includes('.')) {
+                const [relation, field] = key.split('.');
+                if (['user', 'sucursal'].includes(relation)) {
+                  qb.orWhere(`${relation}.${field} ILIKE :${key}`, { 
+                    [key]: `%${value}%` 
+                  });
+                }
               }
             }
           }
-        }),
+        })
       );
     }
-
-    const results = await queryBuilder.getMany();
-
-    if (results.length === 0) {
+  
+    // Aplicar paginación
+    queryBuilder.skip(skip).take(limit);
+  
+    // Obtener resultados y total
+    const [data, total] = await queryBuilder.getManyAndCount();
+  
+    if (data.length === 0) {
       throw new NotFoundException('No se encontraron resultados');
     }
-
-    return results;
+  
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        last_page: Math.ceil(total / limit),
+      },
+    };
   }
 }

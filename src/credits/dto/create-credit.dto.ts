@@ -84,4 +84,8 @@ export class SearchCreditDto {
   'user.clientEmail'?: string;
   'user.clientPhoneNumber'?: string;
   'user.clientCurp'?: string;
+  page?: number;
+  limit?: number;
+  
+  
 }
