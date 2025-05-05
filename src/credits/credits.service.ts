@@ -85,6 +85,7 @@ export class CreditsService {
     const credit = await this.findOne(id);
     return await credit.softRemove();
   }
+  
   async searchCredits(searchParams: SearchCreditDto): Promise<PaginatedResultDto<Credit>> {
     const { page = 1, limit = 10, ...filters } = searchParams;
     const skip = (page - 1) * limit;

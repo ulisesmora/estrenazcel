@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateVoucherDto, PaginationParamsDto } from './dto/create-voucher.dto';
+import { CreateVoucherDto, PaginatedResultDto, PaginationParamsDto, SearchVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Voucher } from './entities/voucher.entity';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { classToPlain, plainToClass } from '@nestjs/class-transformer';
 import { Company } from 'src/company/entities/company.entity';
 import { Credit } from 'src/credits/credit.entity';
@@ -74,5 +74,62 @@ export class VoucherService {
   async remove(id: number) {
     const voucher = await this.findOne(id);
     return await voucher.softRemove();
+  }
+
+  async searchCredits(searchParams: SearchVoucherDto): Promise<PaginatedResultDto<Voucher>> {
+    const { page = 1, limit = 10, ...filters } = searchParams;
+    const skip = (page - 1) * limit;
+  
+    const queryBuilder = this.voucherRepository
+      .createQueryBuilder('credit')
+      .leftJoinAndSelect('voucher.credit', 'credit')
+      .leftJoinAndSelect('credit.sucursal', 'sucursal');
+  
+    // Construcción dinámica de condiciones de búsqueda
+    if (Object.keys(filters).length > 0) {
+      queryBuilder.where(
+        new Brackets((qb) => {
+          for (const [key, value] of Object.entries(filters)) {
+            if (value) {
+              // Búsqueda en campos de Credit
+              if (this.voucherRepository.metadata.propertiesMap[key]) {
+                qb.orWhere(`voucher.${key} ILIKE :${key}`, { 
+                  [key]: `%${value}%` 
+                });
+              }
+              // Búsqueda en relaciones (user o sucursal)
+              else if (key.includes('.')) {
+                const [relation, field] = key.split('.');
+                if (['voucher', 'sucursal'].includes(relation)) {
+                  qb.orWhere(`${relation}.${field} ILIKE :${key}`, { 
+                    [key]: `%${value}%` 
+                  });
+                }
+              }
+            }
+          }
+        })
+      );
+    }
+  
+    // Aplicar paginación
+    queryBuilder.skip(skip).take(limit);
+  
+    // Obtener resultados y total
+    const [data, total] = await queryBuilder.getManyAndCount();
+  
+    if (data.length === 0) {
+      throw new NotFoundException('No se encontraron resultados');
+    }
+  
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        last_page: Math.ceil(total / limit),
+      },
+    };
   }
 }

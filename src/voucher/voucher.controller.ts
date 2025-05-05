@@ -227,6 +227,8 @@ export class VoucherController {
     return this.voucherService.findAll(paginationParams);
   }
 
+  
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.voucherService.findOne(+id);
