@@ -77,43 +77,51 @@ export class VoucherService {
   }
 
   async searchCredits(searchParams: SearchVoucherDto): Promise<PaginatedResultDto<Voucher>> {
-    const { page = 1, limit = 10, ...filters } = searchParams;
+    // Ensure page and limit are valid numbers with proper defaults
+    console.log('entra')
+    const page = Number(searchParams.page) || 1;
+    const limit = Number(searchParams.limit) || 10;
     const skip = (page - 1) * limit;
   
     const queryBuilder = this.voucherRepository
-      .createQueryBuilder('credit')
+      .createQueryBuilder('voucher')  // Fixed: Changed from 'credit' to 'voucher'
       .leftJoinAndSelect('voucher.credit', 'credit')
-      .leftJoinAndSelect('credit.sucursal', 'sucursal');
+      .leftJoinAndSelect('voucher.company', 'company');
   
     // Construcción dinámica de condiciones de búsqueda
-    if (Object.keys(filters).length > 0) {
+    if (Object.keys(searchParams).length > 0) {
       queryBuilder.where(
         new Brackets((qb) => {
-          for (const [key, value] of Object.entries(filters)) {
+          for (const [key, value] of Object.entries(searchParams)) {
+            // Skip pagination parameters
+            if (key === 'page' || key === 'limit') continue;
+            
             if (value) {
-              // Búsqueda en campos de Credit
+              // Búsqueda en campos de Voucher
               if (this.voucherRepository.metadata.propertiesMap[key]) {
                 qb.orWhere(`voucher.${key} ILIKE :${key}`, { 
                   [key]: `%${value}%` 
                 });
               }
-              // Búsqueda en relaciones (user o sucursal)
-              else if (key.includes('.')) {
+              // Búsqueda en relaciones
+             /* else if (key.includes('.')) {
                 const [relation, field] = key.split('.');
-                if (['voucher', 'sucursal'].includes(relation)) {
+                if (['credit', 'company'].includes(relation)) {
                   qb.orWhere(`${relation}.${field} ILIKE :${key}`, { 
                     [key]: `%${value}%` 
                   });
                 }
-              }
+              }*/
             }
           }
         })
       );
     }
   
-    // Aplicar paginación
-    queryBuilder.skip(skip).take(limit);
+    // Aplicar paginación solo si los valores son válidos
+    if (!isNaN(skip) && !isNaN(limit)) {
+      queryBuilder.skip(skip).take(limit);
+    }
   
     // Obtener resultados y total
     const [data, total] = await queryBuilder.getManyAndCount();

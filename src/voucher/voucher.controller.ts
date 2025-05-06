@@ -14,7 +14,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { VoucherService } from './voucher.service';
-import { CreateVoucherDto, PaginationParamsDto } from './dto/create-voucher.dto';
+import { CreateVoucherDto, PaginationParamsDto, SearchVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
 import { CreditsService } from 'src/credits/credits.service';
 import { CompanyService } from 'src/company/company.service';
@@ -222,12 +222,19 @@ export class VoucherController {
     return `Procesados ${success} vouchers con ${errors} errores`;
   }
 
+
+  @Get('search')
+  async search(@Query() searchParams: SearchVoucherDto) {
+    return this.voucherService.searchCredits(searchParams);
+  }
+
+
   @Get()
   async findAll(@Query() paginationParams: PaginationParamsDto) {
     return this.voucherService.findAll(paginationParams);
   }
 
-  
+
 
   @Get(':id')
   findOne(@Param('id') id: string) {
