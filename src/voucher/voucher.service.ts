@@ -78,7 +78,6 @@ export class VoucherService {
 
   async searchCredits(searchParams: SearchVoucherDto): Promise<PaginatedResultDto<Voucher>> {
     // Ensure page and limit are valid numbers with proper defaults
-    console.log('entra')
     const page = Number(searchParams.page) || 1;
     const limit = Number(searchParams.limit) || 10;
     const skip = (page - 1) * limit;
@@ -104,14 +103,14 @@ export class VoucherService {
                 });
               }
               // Búsqueda en relaciones
-             /* else if (key.includes('.')) {
+              else if (key.includes('.')) {
                 const [relation, field] = key.split('.');
                 if (['credit', 'company'].includes(relation)) {
                   qb.orWhere(`${relation}.${field} ILIKE :${key}`, { 
                     [key]: `%${value}%` 
                   });
                 }
-              }*/
+              }
             }
           }
         })
