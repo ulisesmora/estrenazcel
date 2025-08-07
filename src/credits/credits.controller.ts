@@ -132,7 +132,9 @@ async search(@Query() searchParams: SearchCreditDto) {
             const missing = expected.filter((h) => !headers.includes(h));
             if (missing.length) {
               return reject(
-                new Error(`Faltan columnas obligatorias: ${missing.join(', ')}`),
+                new Error(
+                  `Faltan columnas obligatorias: ${missing.join(', ')}`,
+                ),
               );
             }
             headersValidated = true;

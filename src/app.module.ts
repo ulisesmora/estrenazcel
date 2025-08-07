@@ -9,6 +9,7 @@ import { VoucherModule } from './voucher/voucher.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './config/typeorm-config';
 import { AppController } from './app.controller';
+import { LocationsModule } from './locations/locations.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AppController } from './app.controller';
     CompanyModule,
     SucursalModule,
     VoucherModule,
+    LocationsModule,
   ],
   controllers: [AppController],
 })
