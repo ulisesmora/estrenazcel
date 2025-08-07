@@ -5,6 +5,7 @@ import { Credit } from 'src/credits/credit.entity';
 import { Sucursal } from 'src/sucursal/entities/sucursal.entity';
 import { User } from 'src/users/user.entity';
 import { Voucher } from 'src/voucher/entities/voucher.entity';
+import { Location } from 'src/locations/entities/location.entity';
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -13,6 +14,6 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   username: 'postgres',
   password: 'Luquillas$1',
   database: 'postgres',
-  entities: [Admin,Company,Credit,Sucursal, User, Voucher],
+  entities: [Admin, Company, Credit, Sucursal, User, Voucher, Location],
   synchronize: true,
 };
