@@ -6,8 +6,8 @@ export class Location extends BaseEntity {
   id: number;
   @Column()
   imei: string;
-  @Column()
-  latitude: string;
-  @Column()
-  longitude: string;
+  @Column({type: 'float'})
+  latitude: number;
+  @Column({type: 'float'})
+  longitude: number;
 }

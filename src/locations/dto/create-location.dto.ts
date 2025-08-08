@@ -4,6 +4,7 @@ import {
   IsLatitude,
   IsLongitude,
   Length,
+  IsNumber,
 } from 'class-validator';
 
 export class CreateLocationDto {
@@ -13,14 +14,14 @@ export class CreateLocationDto {
   imei: string;
 
   @IsNotEmpty({ message: 'La latitud es requerida' })
-  @IsString({ message: 'La latitua debe ser una cadena de texto' })
+  @IsNumber()
   @IsLatitude({ message: 'La latitud debe ser un valor válido entre -90 y 90' })
-  latitude: string;
+  latitude: number;
 
   @IsNotEmpty({ message: 'La longitud es requerida' })
-  @IsString({ message: 'La longitud debe ser una cadena de texto' })
+  @IsNumber()
   @IsLongitude({
     message: 'La longitud debe ser un valor válido entre -180 y 180',
   })
-  longitude: string;
+  longitude: number;
 }
