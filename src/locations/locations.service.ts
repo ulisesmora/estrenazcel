@@ -29,8 +29,9 @@ export class LocationsService {
 
     const where: any = {};
     if (search) {
-      where.imei = { imei: Like(`%${search}%`) };
+      //where.imei = { imei: Like(`%${search}%`) };
       // O puedes hacer búsqueda en múltiples campos con OR
+      where.imei = Like(`%${search}%`);
     }
 
     const [data, total] = await this.creditRepository.findAndCount({
