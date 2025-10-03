@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Location } from './entities/location.entity';
-import { Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { classToPlain, plainToClass } from '@nestjs/class-transformer';
 import { PaginationDto } from 'src/credits/dto/create-credit.dto';
 
@@ -31,7 +31,7 @@ export class LocationsService {
     if (search) {
       //where.imei = { imei: Like(`%${search}%`) };
       // O puedes hacer búsqueda en múltiples campos con OR
-      where.imei = Like(`%${search}%`);
+      where.imei = search;
     }
 
     const [data, total] = await this.creditRepository.findAndCount({
