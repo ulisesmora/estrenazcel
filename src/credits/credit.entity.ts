@@ -1,6 +1,7 @@
 import { Sucursal } from 'src/sucursal/entities/sucursal.entity';
 import { User } from 'src/users/user.entity';
 import { Voucher } from 'src/voucher/entities/voucher.entity';
+import { Location } from 'src/locations/entities/location.entity';
 import {
   BaseEntity,
   Column,
@@ -36,6 +37,8 @@ export class Credit extends BaseEntity {
   weekly_payment: number;
   @Column({ nullable: true })
   weekly_day_payment: string;
+  @Column({ nullable: true })
+  sucursal_name: string;
   @CreateDateColumn({ type: 'timestamp' })
   created: Date;
   @UpdateDateColumn({
