@@ -23,6 +23,21 @@ export class LocationsService {
     }
   }
 
+  async findImeis() {
+    try {
+      const imeis = await this.creditRepository
+        .createQueryBuilder('location')
+        .select('DISTINCT location.imei', 'imei')
+        .orderBy('location.imei', 'ASC')
+        .getRawMany();
+
+      return imeis.map((i) => i.imei); // Devuelve solo un array de strings
+    } catch (error) {
+      console.error('Error fetching IMEIs:', error);
+      throw error;
+    }
+  }
+
   async findAll(paginationDto: PaginationDto) {
     const { page, limit, sortBy, sortOrder, search } = paginationDto;
     const skip = (page - 1) * limit;

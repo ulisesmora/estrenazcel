@@ -14,7 +14,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { CreditsService } from './credits.service';
-import { CreateCreditDto, PaginationDto, SearchCreditDto } from './dto/create-credit.dto';
+import {
+  CreateCreditDto,
+  PaginationDto,
+  SearchCreditDto,
+} from './dto/create-credit.dto';
 import { UsersService } from 'src/users/users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -26,7 +30,7 @@ export class CreditsController {
   constructor(
     private readonly creditService: CreditsService,
     private readonly userService: UsersService,
-    ) {}
+  ) {}
 
   @Post()
   async create(@Body() createCompanyDto: CreateCreditDto) {
@@ -35,9 +39,9 @@ export class CreditsController {
   }
 
   @Get('search')
-async search(@Query() searchParams: SearchCreditDto) {
-  return this.creditService.searchCredits(searchParams);
-}
+  async search(@Query() searchParams: SearchCreditDto) {
+    return this.creditService.searchCredits(searchParams);
+  }
 
   @Post('file')
   @UseInterceptors(
@@ -81,7 +85,7 @@ async search(@Query() searchParams: SearchCreditDto) {
       })
       .on('error', (error) => {
         // Handle error
-        console.error(error,'ERROR CREDITS');
+        console.error(error, 'ERROR CREDITS');
       });
     // Return response
   }
@@ -96,7 +100,10 @@ async search(@Query() searchParams: SearchCreditDto) {
       fileFilter: (_, file, cb) => {
         const isCsv = file.originalname.toLowerCase().endsWith('.csv');
         if (!isCsv) {
-          return cb(new BadRequestException('Solo se permiten archivos CSV'), false);
+          return cb(
+            new BadRequestException('Solo se permiten archivos CSV'),
+            false,
+          );
         }
         cb(null, true);
       },
@@ -165,7 +172,9 @@ async search(@Query() searchParams: SearchCreditDto) {
           })
           .on('end', () => {
             if (!headersValidated) {
-              return reject(new Error('No se pudieron validar los encabezados'));
+              return reject(
+                new Error('No se pudieron validar los encabezados'),
+              );
             }
             resolve();
           })
@@ -203,21 +212,22 @@ async search(@Query() searchParams: SearchCreditDto) {
 
   private mapRowToDto(row: any): CreateCreditDto {
     const dto = new CreateCreditDto();
-    dto.credit_amount        = Number.parseFloat(row.credit_amount);
-    dto.hitch_amount         = row.hitch_amount;
-    dto.branch_phone         = row.branch_phone;
-    dto.model_phone          = row.model_phone;
-    dto.pending_payments     = Number.parseInt(row.pending_payments, 10);
-    dto.current_balance      = Number.parseFloat(row.current_balance);
-    dto.imei                 = row.imei;
-    dto.weekly_payment       = row.weekly_payment;
-    dto.weekly_day_payment   = row.weekly_day_payment;
-    dto.clientCurp           = row.clientCurp;
+    dto.credit_amount = Number.parseFloat(row.credit_amount);
+    dto.hitch_amount = row.hitch_amount;
+    dto.branch_phone = row.branch_phone;
+    dto.model_phone = row.model_phone;
+    dto.pending_payments = Number.parseInt(row.pending_payments, 10);
+    dto.current_balance = Number.parseFloat(row.current_balance);
+    dto.imei = row.imei;
+    dto.weekly_payment = row.weekly_payment;
+    dto.weekly_day_payment = row.weekly_day_payment;
+    dto.clientCurp = row.clientCurp;
     return dto;
   }
 
   private generateSummaryMessage(success: number, errors: number): string {
-    if (errors === 0) return 'Todos los créditos fueron procesados exitosamente';
+    if (errors === 0)
+      return 'Todos los créditos fueron procesados exitosamente';
     if (success === 0) return 'No se pudo procesar ningún crédito';
     return `Procesados ${success} créditos con ${errors} errores`;
   }
@@ -235,6 +245,16 @@ async search(@Query() searchParams: SearchCreditDto) {
   @Get('imei/:id')
   findOneByImei(@Param('id') id: string) {
     return this.creditService.findOneByImei(id);
+  }
+
+  @Get('sucursal/sucursal')
+  findSucursals() {
+    return this.creditService.findDistinctSucursalNames();
+  }
+
+  @Get('sucursal/:sucursal')
+  findCreditsInSucursals(@Param('sucursal') sucursal: string) {
+    return this.creditService.findCreditsBySucursal(sucursal);
   }
 
   @Patch(':id')

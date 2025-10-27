@@ -16,4 +16,9 @@ export class LocationsController {
   findAll(@Query() paginationDto: PaginationDto) {
     return this.locationsService.findAll(paginationDto);
   }
+
+  @Get('imeis')
+  findAllImeis() {
+    return this.locationsService.findImeis();
+  }
 }
