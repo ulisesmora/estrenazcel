@@ -134,6 +134,7 @@ export class CreditsController {
               'imei',
               'weekly_payment',
               'weekly_day_payment',
+              'sucursal_name',
               'clientCurp',
             ];
             const missing = expected.filter((h) => !headers.includes(h));
@@ -154,7 +155,8 @@ export class CreditsController {
               if (
                 !row.credit_amount ||
                 !row.clientCurp ||
-                isNaN(Number.parseFloat(row.credit_amount))
+                isNaN(Number.parseFloat(row.credit_amount)) ||
+                !row.sucursal_name
               ) {
                 throw new Error('credit_amount inválido o clientCurp faltante');
               }
@@ -221,6 +223,7 @@ export class CreditsController {
     dto.imei = row.imei;
     dto.weekly_payment = row.weekly_payment;
     dto.weekly_day_payment = row.weekly_day_payment;
+    dto.sucursal_name = row.sucursal_name;
     dto.clientCurp = row.clientCurp;
     return dto;
   }

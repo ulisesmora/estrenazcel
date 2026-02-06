@@ -31,6 +31,9 @@ export class CreateCreditDto {
   @IsNotEmpty()
   @IsString()
   clientCurp: string;
+  @IsNotEmpty()
+  @IsString()
+  sucursal_name: string;
 }
 
 
